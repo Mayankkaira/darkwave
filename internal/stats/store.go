@@ -42,21 +42,21 @@ func NewStore() *StatsStore {
 	return &StatsStore{items: items}
 }
 
-func (s *StatsStore) Record(res probe.Result) {
+func (s *StatsStore) Record(result probe.Result) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	stats, ok := s.items[res.URL]
+	stats, ok := s.items[result.URL]
 	if !ok {
-		stats = &URLStats{URL: res.URL}
-		s.items[res.URL] = stats
+		stats = &URLStats{URL: result.URL}
+		s.items[result.URL] = stats
 	}
 	stats.TotalChecks++
-	stats.TotalLatency += res.Latency
-	stats.LastStatus = res.StatusCode
-	if res.Err != nil {
+	stats.TotalLatency += result.Latency
+	stats.LastStatus = result.StatusCode
+	if result.Err != nil {
 		stats.Failures++
 		stats.IsHealthy = false
-		stats.LastError = res.Err.Error()
+		stats.LastError = result.Err.Error()
 	} else {
 		stats.Successes++
 		stats.IsHealthy = true
